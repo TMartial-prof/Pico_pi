@@ -1,4 +1,5 @@
 # Pico_pi
 Informations sur le Pico pi
 
-Schéma de brochage
+- schéma de brochage
+- éditeur Thonny
