@@ -1,4 +1,4 @@
-# MicroPython SSD1306 OLED driver, I2C and SPI interfaces created by Adafruit
+# Pilote OLED SSD1306 MicroPython Interface SPI
 
 import time
 import framebuf
@@ -98,35 +98,6 @@ class SSD1306:
 
     def text(self, string, x, y, col=1):
         self.framebuf.text(string, x, y, col)
-
-
-class SSD1306_I2C(SSD1306):
-    def __init__(self, width, height, i2c, addr=0x3c, external_vcc=False):
-        self.i2c = i2c
-        self.addr = addr
-        self.temp = bytearray(2)
-        # Add an extra byte to the data buffer to hold an I2C data/command byte
-        # to use hardware-compatible I2C transactions.  A memoryview of the
-        # buffer is used to mask this byte from the framebuffer operations
-        # (without a major memory hit as memoryview doesn't copy to a separate
-        # buffer).
-        self.buffer = bytearray(((height // 8) * width) + 1)
-        self.buffer[0] = 0x40  # Set first byte of data buffer to Co=0, D/C=1
-        self.framebuf = framebuf.FrameBuffer1(memoryview(self.buffer)[1:], width, height)
-        super().__init__(width, height, external_vcc)
-
-    def write_cmd(self, cmd):
-        self.temp[0] = 0x80 # Co=1, D/C#=0
-        self.temp[1] = cmd
-        self.i2c.writeto(self.addr, self.temp)
-
-    def write_framebuf(self):
-        # Blast out the frame buffer using a single I2C transaction to support
-        # hardware I2C interfaces.
-        self.i2c.writeto(self.addr, self.buffer)
-
-    def poweron(self):
-        pass
 
 
 class SSD1306_SPI(SSD1306):
